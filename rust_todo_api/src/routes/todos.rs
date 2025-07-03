@@ -6,13 +6,31 @@ use axum::{
 use crate::{models::todo::{Todo, TodoInput}, state::AppState};
 use serde_json::json;
 
-pub async fn list_todos(State(state): State<AppState>) -> impl IntoResponse {
-    // 收集所有 Todo 为 Vec
-    let todos: Vec<Todo> = state
+use axum::extract::Query;
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+pub struct Pagination {
+    page: Option<usize>,
+    per_page: Option<usize>,
+}
+
+pub async fn list_todos(
+    State(state): State<AppState>,
+    Query(pagination): Query<Pagination>,
+) -> impl IntoResponse {
+    let page = pagination.page.unwrap_or(1);
+    let per_page = pagination.per_page.unwrap_or(20);
+    let skip = (page - 1) * per_page;
+
+    // Efficiently collect and paginate todos
+    let todos = state
         .todos
         .iter()
+        .skip(skip)
+        .take(per_page)
         .map(|entry| entry.value().clone())
-        .collect();
+        .collect::<Vec<_>>();
 
     Json(todos)
 }

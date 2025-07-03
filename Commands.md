@@ -16,4 +16,14 @@ cargo run
 
 // fix warning
 cargo fix --bin "rust_todo_api
+
+// check compiler issue
+cargo check
+
+// run server
+cargo run --release
+
+// Some errors have detailed explanations: E0277, E0308, E0599, E0624.
+// For more information about an error, try 
+rustc --explain E0277
 ```
