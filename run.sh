@@ -1,0 +1,1 @@
+cd rust_todo_api && cargo run
